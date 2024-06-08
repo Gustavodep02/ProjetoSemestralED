@@ -1,0 +1,18 @@
+CODIGO_IDENTIFICADOR;TIPO_PRODUTO;DESCRICAO
+01;Produtos ao Consumidor;usados por usuários-finais
+02;Produtos Industriais;usados na produção de outros bens
+03;Bens de Conveniencia;adquiridos frequentemente e com um esforço mínimo
+04;Bens de Impulso;compra por estímulo sensorial imediato
+05;Bens de Emergencia;bens necessários imediatamente
+06;Bens de Compra Comparada;alguma comparação com outros bens como carros e TVs. Ou seja, são produtos que exigem um alto esforço do consumidor para comparar os requisitos e fazer uma escolha que atenda às suas necessidades.
+07;Bens de Especialidade;comparação extensiva com outros bens e uma longa busca por informações
+08;Bens Pereciveis;bens que se deteriorarão rapidamente mesmo sem uso
+09;Bens Duraveis;bens que sobrevivem à ocasiões de múltiplo uso
+10;Bens Nao-Duraveis;bens que serão consumidos em um única oportunidade
+11;Bens de Capital;instalações, equipamentos e construções
+12;Partes e Materiais;bens que são agregados a um produto final
+13;Abastecimento e Servicos;bens que facilitam a produção
+14;Commodities;bens indiferenciáveis (ex. trigo, ouro, açúcar, etc)
+15;Produtos Intermediarios;resulta da fabricação de outro produto
+
+
