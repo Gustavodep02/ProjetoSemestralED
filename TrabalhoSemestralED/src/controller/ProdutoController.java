@@ -28,6 +28,7 @@ public class ProdutoController implements ActionListener {
 	private JTextArea taProduto;
 	private JTextField quantidade;
 	private HashMap<Integer, List<Integer>> produtosPorTipo = new HashMap<>();
+
 	public ProdutoController(JTextField id, JTextField nome, JTextField valor, JTextField descricao, JComboBox idTipo,
 			JTextArea taProduto, JTextField quantidade) {
 		this.id = id;
@@ -48,32 +49,46 @@ public class ProdutoController implements ActionListener {
 
 	public void cadastrarProduto() throws Exception {
 		Produto produto = new Produto();
+		if (id.getText().length() == 0) {
+            taProduto.setText("Codigo Identificador Invalido!");
+            return;
+        } else if (nome.getText().length() == 0) {
+            taProduto.setText("Nome Invalido!");
+            return;
+        } else if (valor.getText().length() == 0 || !valor.getText().matches("[0-9]+")) {
+            taProduto.setText("Valor Invalido!");
+            return;
+        } else if (descricao.getText().length() == 0) {
+            taProduto.setText("Descricao Invalida!");
+            return;
+        } else if (quantidade.getText().length() == 0 || !quantidade.getText().matches("[0-9]+")) {
+            taProduto.setText("Quantidade Invalida!");
+            return;
+        }
 		produto.id = id.getText();
 		produto.nome = nome.getText();
 		produto.valor = valor.getText();
 		produto.descricao = descricao.getText();
 		String[] tipo = idTipo.getSelectedItem().toString().split(" ");
-		produto.idTipo = ";"+tipo[0];
+		produto.idTipo = ";" + tipo[0];
 		produto.quantidade = quantidade.getText();
-
-		// codigo para adicionar o cliente ao csv
 
 		String linha = criarLinhaProduto(produto);
 
-		File arq = new File("C:\\TEMP", "Produto.csv"); // mudar o local
+		File arq = new File("./Produto.csv");
 		FileInputStream fluxo = new FileInputStream(arq);
 		InputStreamReader leitor = new InputStreamReader(fluxo);
 		BufferedReader buffer = new BufferedReader(leitor);
-		String linha1 = buffer.readLine(); // recebe a linha
-		linha1 = buffer.readLine();// pula a primeira linha
-		while (linha1 != null) { // realiza a busca em todo o csv ate o fim do arquivo
+		String linha1 = buffer.readLine();
+		linha1 = buffer.readLine();
+		while (linha1 != null) {
 			String[] dados = linha1.split(";");
 			if (dados[0].equals(id.getText().toString())) {
 				taProduto.setText("Produto ja cadastrado!");
 				buffer.close();
 				leitor.close();
 				fluxo.close();
-				return; // caso encontre finaliza a funcao
+				return;
 			}
 			linha1 = buffer.readLine();
 		}
@@ -87,15 +102,14 @@ public class ProdutoController implements ActionListener {
 	}
 
 	public void ConsultarProduto() throws Exception {
-		// codigo para buscar o produto no csv
-		File arq = new File("C:\\TEMP", "Produto.csv"); // mudar o local
+		File arq = new File("./Produto.csv");
 		if (arq.exists() && arq.isFile()) {
 			FileInputStream fluxo = new FileInputStream(arq);
 			InputStreamReader leitor = new InputStreamReader(fluxo);
 			BufferedReader buffer = new BufferedReader(leitor);
-			String linha = buffer.readLine(); // recebe a linha
-			linha = buffer.readLine();// pula a primeira linha
-			while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
+			String linha = buffer.readLine();
+			linha = buffer.readLine();
+			while (linha != null) {
 				String[] dados = linha.split(";");
 				if (dados[0].equals(id.getText().toString())) {
 					taProduto.setText(
@@ -104,7 +118,7 @@ public class ProdutoController implements ActionListener {
 					buffer.close();
 					leitor.close();
 					fluxo.close();
-					return; // caso encontre retorna a funcao
+					return;
 				}
 				linha = buffer.readLine();
 			}
@@ -114,12 +128,11 @@ public class ProdutoController implements ActionListener {
 		} else {
 			throw new Exception("Arquivo inexistente");
 		}
-		taProduto.setText("Produto Nao Encontrado!"); // caso nao encontre seta o texto para Produto Nao
-														// Encontrado
+		taProduto.setText("Produto Nao Encontrado!");
 	}
 
 	public void ExcluirProduto() throws Exception {
-		File arq = new File("C:\\TEMP", "Produto.csv"); // mudar o local
+		File arq = new File("./Produto.csv");
 
 		if (!arq.exists() || !arq.isFile()) {
 			throw new Exception("Arquivo inexistente");
@@ -131,7 +144,6 @@ public class ProdutoController implements ActionListener {
 		StringBuilder novoConteudo = new StringBuilder();
 		String linha = buffer.readLine();
 
-		// Mantem a primeira linha (cabeçalho) no novo conteúdo
 		if (linha != null) {
 			novoConteudo.append(linha).append("\n");
 			linha = buffer.readLine();
@@ -139,7 +151,6 @@ public class ProdutoController implements ActionListener {
 
 		boolean produtoRemovido = false;
 
-		// Le cada linha e adiciona ao novo conteúdo, exceto a linha a ser excluída
 		while (linha != null) {
 			String[] dados = linha.split(";");
 			if (!dados[0].equals(id.getText().toString())) {
@@ -154,7 +165,6 @@ public class ProdutoController implements ActionListener {
 		leitor.close();
 		fluxo.close();
 
-		// Se o produto foi removido, reescreve o arquivo
 		if (produtoRemovido) {
 			FileWriter fw = new FileWriter(arq);
 			PrintWriter pw = new PrintWriter(fw);
@@ -169,13 +179,13 @@ public class ProdutoController implements ActionListener {
 	}
 
 	public void adicionarTipoProduto() throws IOException {
-		File arq = new File("C:\\TEMP", "tipoproduto.csv");
+		File arq = new File("./tipoproduto.csv");
 		FileInputStream fluxo = new FileInputStream(arq);
 		InputStreamReader leitor = new InputStreamReader(fluxo);
 		BufferedReader buffer = new BufferedReader(leitor);
-		String linha = buffer.readLine(); // recebe a linha
-		linha = buffer.readLine();// pula a primeira linha
-		while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
+		String linha = buffer.readLine();
+		linha = buffer.readLine();
+		while (linha != null) {
 			String valor = linha.replaceAll(";", " | ");
 			idTipo.addItem(valor);
 			linha = buffer.readLine();
@@ -191,36 +201,35 @@ public class ProdutoController implements ActionListener {
 				+ produto.quantidade + ";" + produto.idTipo;
 	}
 
-
-		public void listarProduto() throws Exception {
-		    File arq = new File("C:\\TEMP", "Produto.csv"); // mudar o local
-		    FileInputStream fluxo = new FileInputStream(arq);
-		    InputStreamReader leitor = new InputStreamReader(fluxo);
-		    BufferedReader buffer = new BufferedReader(leitor);
-		    String[] id = idTipo.getSelectedItem().toString().split(" | ");
-		    int codigo = Integer.parseInt(id[0]);
-		    String linha = buffer.readLine(); // recebe a linha
-		    linha = buffer.readLine();// pula a primeira linha
-		    HashMap<Integer, List<Integer>> produtosPorTipo = new HashMap<>();
-		    while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
-		        String[] dados = linha.split(";");
-		        if(codigo == Integer.parseInt(dados[5])) {
-		            int codigoProduto = Integer.parseInt(dados[0]);
-		            produtosPorTipo.putIfAbsent(codigo, new ArrayList<>());
-		            produtosPorTipo.get(codigo).add(codigoProduto);
-		        }
-		        linha = buffer.readLine();
-		    }
-		    buffer.close();
-		    leitor.close();
-		    fluxo.close();
-		    if(produtosPorTipo.containsKey(codigo)) {
-		        taProduto.setText(produtosPorTipo.get(codigo).toString());
-		    } else {
-		        taProduto.setText("Nenhum produto deste tipo cadastrado!");
-		    }
+	public void listarProduto() throws Exception {
+		File arq = new File("./Produto.csv");
+		FileInputStream fluxo = new FileInputStream(arq);
+		InputStreamReader leitor = new InputStreamReader(fluxo);
+		BufferedReader buffer = new BufferedReader(leitor);
+		String[] id = idTipo.getSelectedItem().toString().split(" | ");
+		int codigo = Integer.parseInt(id[0]);
+		String linha = buffer.readLine();
+		linha = buffer.readLine();
+		HashMap<Integer, List<Integer>> produtosPorTipo = new HashMap<>();
+		while (linha != null) {
+			String[] dados = linha.split(";");
+			if (codigo == Integer.parseInt(dados[5])) {
+				int codigoProduto = Integer.parseInt(dados[0]);
+				produtosPorTipo.putIfAbsent(codigo, new ArrayList<>());
+				produtosPorTipo.get(codigo).add(codigoProduto);
+			}
+			linha = buffer.readLine();
 		}
-	
+		buffer.close();
+		leitor.close();
+		fluxo.close();
+		if (produtosPorTipo.containsKey(codigo)) {
+			taProduto.setText(produtosPorTipo.get(codigo).toString());
+		} else {
+			taProduto.setText("Nenhum produto deste tipo cadastrado!");
+		}
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
@@ -242,13 +251,13 @@ public class ProdutoController implements ActionListener {
 			} catch (Exception e1) {
 				taProduto.setText(e1.getMessage());
 			}
-		}else if ("Listar Produtos".equals(cmd)) {
-            try {
-                listarProduto();
-            } catch (Exception e1) {
-                taProduto.setText(e1.getMessage());
-            }
-        }
+		} else if ("Listar Produtos".equals(cmd)) {
+			try {
+				listarProduto();
+			} catch (Exception e1) {
+				taProduto.setText(e1.getMessage());
+			}
+		}
 
 	}
 }

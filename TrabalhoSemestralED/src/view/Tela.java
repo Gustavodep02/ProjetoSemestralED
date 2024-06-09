@@ -20,6 +20,7 @@ import controller.ClienteController;
 import controller.ClienteJController;
 import controller.ProdutoController;
 import controller.TipoProdutoController;
+import javax.swing.ScrollPaneConstants;
 
 public class Tela extends JFrame {
 
@@ -279,7 +280,7 @@ public class Tela extends JFrame {
 		tabProdutos.add(lblEstoqueProduto);
 
 		JButton btnCadastrarProduto = new JButton("Cadastrar");
-		btnCadastrarProduto.setBounds(355, 473, 156, 53);
+		btnCadastrarProduto.setBounds(228, 473, 156, 53);
 		tabProdutos.add(btnCadastrarProduto);
 
 		JButton btnConsultarProduto = new JButton("Consultar por Codigo");
@@ -349,7 +350,7 @@ public class Tela extends JFrame {
 		txtTipoProduto.setColumns(10);
 
 		JButton btnCadastrarTipoProduto = new JButton("Cadastrar");
-		btnCadastrarTipoProduto.setBounds(218, 338, 156, 53);
+		btnCadastrarTipoProduto.setBounds(374, 339, 156, 53);
 		tabTipoProduto.add(btnCadastrarTipoProduto);
 
 		JLabel lblCdgTipoProduto = new JLabel("Codigo Identificador:");
@@ -418,16 +419,30 @@ public class Tela extends JFrame {
 		lblQuantidadeCarrinho.setBounds(40, 230, 111, 29);
 		tabCarrinho.add(lblQuantidadeCarrinho);
 
+		JScrollPane scrollPane_7 = new JScrollPane();
+		scrollPane_7.setEnabled(false);
+		scrollPane_7.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane_7.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		scrollPane_7.setBounds(174, 69, 429, 26);
+		tabCarrinho.add(scrollPane_7);
+
 		JComboBox cbClienteCarrinho = new JComboBox();
-		cbClienteCarrinho.setBounds(174, 69, 429, 26);
-		tabCarrinho.add(cbClienteCarrinho);
+		scrollPane_7.setViewportView(cbClienteCarrinho);
+
+		JLabel lblCJCarrinho = new JLabel("CNPJ | Nome | Endereco | Numero | Complemento | CEP | Telefone | Email ");
+		lblCJCarrinho.setBounds(174, 40, 429, 14);
+		tabCarrinho.add(lblCJCarrinho);
+
+		JLabel lblPCarrinho = new JLabel("Codigo | Nome | Valor | Descricao | Quantidade | Tipo de Produto");
+		lblPCarrinho.setBounds(174, 127, 429, 14);
+		tabCarrinho.add(lblPCarrinho);
 
 		JComboBox cbItemCarrinho = new JComboBox();
 		cbItemCarrinho.setBounds(174, 152, 429, 26);
 		tabCarrinho.add(cbItemCarrinho);
 
 		JButton btnAdicionarCarrinho = new JButton("Adicionar");
-		btnAdicionarCarrinho.setBounds(268, 311, 159, 55);
+		btnAdicionarCarrinho.setBounds(174, 311, 159, 55);
 		tabCarrinho.add(btnAdicionarCarrinho);
 
 		JScrollPane scrollPane_4 = new JScrollPane();
@@ -436,17 +451,15 @@ public class Tela extends JFrame {
 
 		JTextArea taCarrinho = new JTextArea();
 		scrollPane_4.setViewportView(taCarrinho);
-
 		JButton btnRemoverCarrinho = new JButton("Remover");
 		btnRemoverCarrinho.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
-		btnRemoverCarrinho.setBounds(689, 71, 159, 55);
+		btnRemoverCarrinho.setBounds(444, 311, 159, 55);
 		tabCarrinho.add(btnRemoverCarrinho);
-
 		JButton btnCheckoutCarrinho = new JButton("Checkout");
-		btnCheckoutCarrinho.setBounds(989, 71, 159, 55);
+		btnCheckoutCarrinho.setBounds(841, 68, 159, 55);
 		tabCarrinho.add(btnCheckoutCarrinho);
 
 		JScrollPane scrollPane_5 = new JScrollPane();
@@ -457,17 +470,12 @@ public class Tela extends JFrame {
 		scrollPane_5.setViewportView(taCheckout);
 
 		JLabel lblCarrinho = new JLabel("Carrinho");
-		lblCarrinho.setBounds(316, 388, 111, 29);
+		lblCarrinho.setBounds(40, 388, 111, 29);
 		tabCarrinho.add(lblCarrinho);
 
 		JLabel lblCheckout = new JLabel("Checkout");
 		lblCheckout.setBounds(901, 138, 111, 29);
 		tabCarrinho.add(lblCheckout);
-
-		txtQuantidadeCarrinho = new JTextField();
-		txtQuantidadeCarrinho.setBounds(174, 234, 429, 26);
-		tabCarrinho.add(txtQuantidadeCarrinho);
-		txtQuantidadeCarrinho.setColumns(10);
 
 		JScrollPane scrollPane_6 = new JScrollPane();
 		scrollPane_6.setBounds(645, 418, 584, 221);
@@ -479,6 +487,25 @@ public class Tela extends JFrame {
 		JButton btnListarProdutos = new JButton("Listar Produtos");
 		btnListarProdutos.setBounds(554, 473, 156, 53);
 		tabProdutos.add(btnListarProdutos);
+		txtQuantidadeCarrinho = new JTextField();
+		txtQuantidadeCarrinho.setBounds(174, 234, 429, 26);
+		tabCarrinho.add(txtQuantidadeCarrinho);
+		txtQuantidadeCarrinho.setColumns(10);
+
+		JLabel lblVendas = new JLabel("Vendas");
+		lblVendas.setBounds(901, 388, 111, 29);
+		tabCarrinho.add(lblVendas);
+
+		JLabel lblTPProdutoProduto = new JLabel("Codigo Identificador | Tipo de Produto | Descricao");
+		lblTPProdutoProduto.setBounds(228, 392, 482, 14);
+		tabProdutos.add(lblTPProdutoProduto);
+
+		CarrinhoController c = new CarrinhoController(cbClienteCarrinho, cbItemCarrinho, txtQuantidadeCarrinho,
+				taCarrinho, taCheckout, taVendasCarrinho);
+
+		btnAdicionarCarrinho.addActionListener(c);
+		btnRemoverCarrinho.addActionListener(c);
+		btnCheckoutCarrinho.addActionListener(c);
 
 		ClienteController cF = new ClienteController(txtCPFClienteFisico, txtNomeClienteFisico,
 				txtLogradouroClienteFisico, txtNumeroDePortaClienteFisico, txtComplementoClienteFisico,
@@ -505,17 +532,11 @@ public class Tela extends JFrame {
 
 		ProdutoController p = new ProdutoController(txtCdgProduto, txtProduto, txtValorProduto, txtDescricaoProduto,
 				cbTpProduto, taProduto, txtEstoqueProduto);
-		
+
 		btnListarProdutos.addActionListener(p);
 		btnCadastrarProduto.addActionListener(p);
 		btnConsultarProduto.addActionListener(p);
 		btnExcluirProduto.addActionListener(p);
 
-		CarrinhoController c = new CarrinhoController(cbClienteCarrinho, cbItemCarrinho, txtQuantidadeCarrinho,
-				taCarrinho, taCheckout, taVendasCarrinho);
-
-		btnAdicionarCarrinho.addActionListener(c);
-		btnRemoverCarrinho.addActionListener(c);
-		btnCheckoutCarrinho.addActionListener(c);
 	}
 }

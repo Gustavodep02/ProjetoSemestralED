@@ -10,14 +10,11 @@ public class Cliente_J {
 	public String telefone;
 	public String email;
 
-	
-
-	
 	@Override
 	public String toString() {
 		return "Cliente_J [nome=" + nome + ", logradouro=" + logradouro + ", numeroPorta=" + numeroPorta
 				+ ", complemento=" + complemento + ", cep=" + cep + ", telefone=" + telefone + ", email=" + email
 				+ ", cnpj=" + cnpj + "]";
 	}
-	
+
 }

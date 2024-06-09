@@ -28,8 +28,9 @@ public class CarrinhoController implements ActionListener {
 	Pilha pilha = new Pilha();
 	Fila<String> fila = new Fila();
 	Fila<String> p1 = new Fila();
+
 	public CarrinhoController(JComboBox cliente, JComboBox produto, JTextField quantidade, JTextArea taCarrinho,
-			JTextArea taCheckout,JTextArea taVendas) {
+			JTextArea taCheckout, JTextArea taVendas) {
 		this.cliente = cliente;
 		this.produto = produto;
 		this.quantidade = quantidade;
@@ -62,47 +63,47 @@ public class CarrinhoController implements ActionListener {
 		taCarrinho.append(pilha.top());
 
 	}
-	
+
 	public void gerarVendas() throws IOException {
-        File arq = new File("C:\\TEMP", "Venda.csv");
-        taVendas.setText("");
-        FileInputStream fluxo = new FileInputStream(arq);
-        InputStreamReader leitor = new InputStreamReader(fluxo);
-        BufferedReader buffer = new BufferedReader(leitor);
-        String linha = buffer.readLine(); // recebe a linha
-        linha = buffer.readLine();// pula a primeira linha
-        while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
-            String valor = linha.replaceAll(";", " | ");
-            taVendas.append(valor+"\n");
-            linha = buffer.readLine();
-        }
-        buffer.close();
-        leitor.close();
-        fluxo.close();
-    }
-	
-	public void gerarCliente() throws IOException {
-		File arq = new File("C:\\TEMP", "Cliente.csv");
+		File arq = new File("./Venda.csv");
+		taVendas.setText("");
 		FileInputStream fluxo = new FileInputStream(arq);
 		InputStreamReader leitor = new InputStreamReader(fluxo);
 		BufferedReader buffer = new BufferedReader(leitor);
-		String linha = buffer.readLine(); // recebe a linha
-		linha = buffer.readLine();// pula a primeira linha
+		String linha = buffer.readLine();
+		linha = buffer.readLine();
+		while (linha != null) {
+			String valor = linha.replaceAll(";", " | ");
+			taVendas.append(valor + "\n");
+			linha = buffer.readLine();
+		}
+		buffer.close();
+		leitor.close();
+		fluxo.close();
+	}
 
-		while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
+	public void gerarCliente() throws IOException {
+		File arq = new File("./Cliente.csv");
+		FileInputStream fluxo = new FileInputStream(arq);
+		InputStreamReader leitor = new InputStreamReader(fluxo);
+		BufferedReader buffer = new BufferedReader(leitor);
+		String linha = buffer.readLine();
+		linha = buffer.readLine();
+
+		while (linha != null) {
 			String valor = linha.replaceAll(";", " | ");
 			cliente.addItem(valor);
 			linha = buffer.readLine();
 		}
 
-		File arqJ = new File("C:\\TEMP", "Cliente_juridico.csv");
+		File arqJ = new File("./Cliente_juridico.csv");
 		FileInputStream fluxoJ = new FileInputStream(arqJ);
 		InputStreamReader leitorJ = new InputStreamReader(fluxoJ);
 		BufferedReader bufferJ = new BufferedReader(leitorJ);
-		String linhaJ = bufferJ.readLine(); // recebe a linha
-		linhaJ = bufferJ.readLine();// pula a primeira linha
+		String linhaJ = bufferJ.readLine();
+		linhaJ = bufferJ.readLine();
 
-		while (linhaJ != null) { // realiza a busca em todo o csv ate o fim do arquivo
+		while (linhaJ != null) {
 			String valorJ = linhaJ.replaceAll(";", " | ");
 			cliente.addItem(valorJ);
 			linhaJ = bufferJ.readLine();
@@ -116,13 +117,13 @@ public class CarrinhoController implements ActionListener {
 	}
 
 	public void gerarProduto() throws IOException {
-		File arq = new File("C:\\TEMP", "Produto.csv");
+		File arq = new File("./Produto.csv");
 		FileInputStream fluxo = new FileInputStream(arq);
 		InputStreamReader leitor = new InputStreamReader(fluxo);
 		BufferedReader buffer = new BufferedReader(leitor);
-		String linha = buffer.readLine(); // recebe a linha
-		linha = buffer.readLine();// pula a primeira linha
-		while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
+		String linha = buffer.readLine();
+		linha = buffer.readLine();
+		while (linha != null) {
 			String valor = linha.replaceAll(";", " | ");
 			produto.addItem(valor);
 			linha = buffer.readLine();
@@ -144,7 +145,7 @@ public class CarrinhoController implements ActionListener {
 	}
 
 	public void alteraQuantidade(String produto, String quantidade, boolean operacao) throws Exception {
-		File arq = new File("C:\\TEMP", "Produto.csv");
+		File arq = new File("./Produto.csv");
 
 		if (!arq.exists() || !arq.isFile()) {
 			throw new Exception("Arquivo inexistente");
@@ -155,19 +156,15 @@ public class CarrinhoController implements ActionListener {
 		BufferedReader buffer = new BufferedReader(leitor);
 		StringBuilder novoConteudo = new StringBuilder();
 		String linha = buffer.readLine();
-
-		// Mantem a primeira linha (cabeçalho) no novo conteúdo
 		if (linha != null) {
 			novoConteudo.append(linha).append("\n");
 			linha = buffer.readLine();
 		}
-
 		boolean quantidadeAlterada = false;
 
-		// Le cada linha e adiciona ao novo conteúdo, exceto a linha a ser excluída
 		while (linha != null) {
 			String[] dados = linha.split(";");
-			if (!dados[1].equals(produto)) {
+			if (!dados[0].equals(produto)) {
 				novoConteudo.append(linha).append("\r\n");
 			} else {
 				int total;
@@ -177,10 +174,10 @@ public class CarrinhoController implements ActionListener {
 					total = Integer.parseInt(dados[4]) - Integer.parseInt(quantidade);
 				}
 				if (total < 0) {
-					throw new Exception("Erro: Quantidade não pode ser negativa!");
+					throw new Exception("Erro: Quantidade insuficiente!");
 				}
 				novoConteudo.append(dados[0]).append(";").append(dados[1]).append(";").append(dados[2]).append(";")
-						.append(dados[3]) // Removed the line that decreases the value
+						.append(dados[3])
 						.append(";").append(total).append(";").append(dados[5]).append("\r\n");
 				quantidadeAlterada = true;
 			}
@@ -191,7 +188,6 @@ public class CarrinhoController implements ActionListener {
 		leitor.close();
 		fluxo.close();
 
-		// Se o produto foi removido, reescreve o arquivo
 		if (quantidadeAlterada) {
 			FileWriter fw = new FileWriter(arq);
 			PrintWriter pw = new PrintWriter(fw);
@@ -200,10 +196,12 @@ public class CarrinhoController implements ActionListener {
 			pw.close();
 			fw.close();
 		}
+		this.produto.removeAllItems();
+		gerarProduto();
 	}
 
 	public void Checkout() throws Exception {
-		File arq = new File("C:\\TEMP", "Carrinho.csv");
+		File arq = new File("./Carrinho.csv");
 		FileWriter fw = new FileWriter(arq);
 		PrintWriter pw = new PrintWriter(fw);
 		pw.write("\r\n" + taCarrinho.getText());
@@ -224,20 +222,21 @@ public class CarrinhoController implements ActionListener {
 			String pop = pilha.pop();
 			fila.insert(pop);
 			String remove = fila.remove();
-			taCheckout.append(remove + "Total do Item: " + valorItem+"\n");
+			taCheckout.append(remove + "Total do Item: " + valorItem + "\n");
 		}
-		taCheckout.append("Cliente: "+cliente.getSelectedItem().toString()+" Total da Compra: " + total+"\n");
+		taCheckout.append("Cliente: " + cliente.getSelectedItem().toString() + "\nTotal da Compra: " + total + "\n");
 		cadastraVenda(cliente.getSelectedItem().toString(), total);
+		taCarrinho.setText("");
 	}
 
 	public Double pegaValor(String produto) throws IOException {
-		File arq = new File("C:\\TEMP", "Produto.csv");
+		File arq = new File("./Produto.csv"); 
 		FileInputStream fluxo = new FileInputStream(arq);
 		InputStreamReader leitor = new InputStreamReader(fluxo);
 		BufferedReader buffer = new BufferedReader(leitor);
-		String linha = buffer.readLine(); // recebe a linha
-		linha = buffer.readLine();// pula a primeira linha
-		while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
+		String linha = buffer.readLine();
+		linha = buffer.readLine();
+		while (linha != null) {
 			String dados[] = linha.split(";");
 			if (dados[0].equals(produto)) {
 				return Double.parseDouble(dados[2]);
@@ -249,18 +248,19 @@ public class CarrinhoController implements ActionListener {
 		fluxo.close();
 		return null;
 	}
-	
+
 	public void cadastraVenda(String cliente, Double total) throws IOException {
-        File arq = new File("C:\\TEMP", "Venda.csv");
-        FileWriter fw = new FileWriter(arq, true);
-        PrintWriter pw = new PrintWriter(fw);
-        cliente = cliente.split(" | ")[0];
-        pw.write("\r\n" + cliente + ";" + total);
-        pw.flush();
-        pw.close();
-        fw.close();
-        gerarVendas();
-    }
+		File arq = new File("./Venda.csv");
+		FileWriter fw = new FileWriter(arq, true);
+		PrintWriter pw = new PrintWriter(fw);
+		cliente = cliente.split(" | ")[0];
+		pw.write("\r\n" + cliente + ";" + total);
+		pw.flush();
+		pw.close();
+		fw.close();
+		gerarVendas();
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();

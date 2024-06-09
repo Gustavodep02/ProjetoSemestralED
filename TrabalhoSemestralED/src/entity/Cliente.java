@@ -8,14 +8,11 @@ public class Cliente {
 	public String complemento;
 	public String cep;
 	public String celular;
-	
 
 	@Override
 	public String toString() {
 		return "Cliente [nome=" + nome + ", logradouro=" + logradouro + ", numeroPorta=" + numeroPorta
 				+ ", complemento=" + complemento + ", cep=" + cep + ", telefone=" + celular + ", cpf=" + cpf + "]";
 	}
-	
 
-	
 }

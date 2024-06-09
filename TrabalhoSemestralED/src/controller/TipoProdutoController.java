@@ -32,28 +32,36 @@ public class TipoProdutoController implements ActionListener {
 
 	public void cadastrarTipoProduto() throws Exception {
 		TipoProduto tp = new TipoProduto();
+		if (id.getText().length() == 0) {
+            taTipoProduto.setText("Codigo Identificador Invalido!");
+            return;
+        } else if (tipo.getText().length() == 0) {
+            taTipoProduto.setText("Tipo Invalido!");
+            return;
+        } else if (descricao.getText().length() == 0) {
+            taTipoProduto.setText("Descricao Invalida!");
+            return;
+        }
 		tp.id = id.getText();
 		tp.tipo = tipo.getText();
 		tp.descricao = descricao.getText();
 
-		// codigo para adicionar o tipo de produto ao csv
-
 		String linha = criarLinhaTipoProduto(tp);
 
-		File arq = new File("C:\\TEMP", "tipoproduto.csv"); // mudar o local
+		File arq = new File("./tipoproduto.csv");
 		FileInputStream fluxo = new FileInputStream(arq);
 		InputStreamReader leitor = new InputStreamReader(fluxo);
 		BufferedReader buffer = new BufferedReader(leitor);
-		String linha1 = buffer.readLine(); // recebe a linha
-		linha1 = buffer.readLine();// pula a primeira linha
-		while (linha1 != null) { // realiza a busca em todo o csv ate o fim do arquivo
+		String linha1 = buffer.readLine();
+		linha1 = buffer.readLine();
+		while (linha1 != null) {
 			String[] dados = linha1.split(";");
 			if (dados[0].equals(id.getText().toString())) {
 				taTipoProduto.setText("Tipo de Produto ja cadastrado!");
 				buffer.close();
 				leitor.close();
 				fluxo.close();
-				return; // caso encontre finaliza a funcao
+				return;
 			}
 			linha1 = buffer.readLine();
 		}
@@ -67,7 +75,7 @@ public class TipoProdutoController implements ActionListener {
 	}
 
 	public void excluirTipoProduto() throws Exception {
-		File arq = new File("C:\\TEMP", "tipoproduto.csv"); // mudar o local
+		File arq = new File("./tipoproduto.csv");
 
 		if (!arq.exists() || !arq.isFile()) {
 			throw new Exception("Arquivo inexistente");
@@ -79,7 +87,6 @@ public class TipoProdutoController implements ActionListener {
 		StringBuilder novoConteudo = new StringBuilder();
 		String linha = buffer.readLine();
 
-		// Mantem a primeira linha (cabeçalho) no novo conteúdo
 		if (linha != null) {
 			novoConteudo.append(linha).append("\n");
 			linha = buffer.readLine();
@@ -87,7 +94,6 @@ public class TipoProdutoController implements ActionListener {
 
 		boolean tipoRemovido = false;
 
-		// Le cada linha e adiciona ao novo conteúdo, exceto a linha a ser excluída
 		while (linha != null) {
 			String[] dados = linha.split(";");
 			if (!dados[0].equals(id.getText().toString())) {
@@ -102,7 +108,6 @@ public class TipoProdutoController implements ActionListener {
 		leitor.close();
 		fluxo.close();
 
-		// Se o tipo de produto foi removido, reescreve o arquivo
 		if (tipoRemovido) {
 			FileWriter fw = new FileWriter(arq);
 			PrintWriter pw = new PrintWriter(fw);
@@ -117,15 +122,14 @@ public class TipoProdutoController implements ActionListener {
 	}
 
 	public void consultarTipoProduto() throws Exception {
-		// codigo para buscar o tipo de produto no csv
-		File arq = new File("C:\\TEMP", "tipoproduto.csv"); // mudar o local
+		File arq = new File("./tipoproduto.csv"); 
 		if (arq.exists() && arq.isFile()) {
 			FileInputStream fluxo = new FileInputStream(arq);
 			InputStreamReader leitor = new InputStreamReader(fluxo);
 			BufferedReader buffer = new BufferedReader(leitor);
-			String linha = buffer.readLine(); // recebe a linha
-			linha = buffer.readLine();// pula a primeira linha
-			while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
+			String linha = buffer.readLine();
+			linha = buffer.readLine();
+			while (linha != null) {
 				String[] dados = linha.split(";");
 				if (dados[0].equals(id.getText().toString())) {
 					taTipoProduto.setText(
@@ -133,7 +137,7 @@ public class TipoProdutoController implements ActionListener {
 					buffer.close();
 					leitor.close();
 					fluxo.close();
-					return; // caso encontre retorna o cliente
+					return;
 				}
 				linha = buffer.readLine();
 			}
@@ -143,8 +147,7 @@ public class TipoProdutoController implements ActionListener {
 		} else {
 			throw new Exception("Arquivo inexistente");
 		}
-		taTipoProduto.setText("Tipo de Produto Nao Encontrado!"); // caso nao encontre seta o texto para Tipo de
-																	// Produto Nao Encontrado
+		taTipoProduto.setText("Tipo de Produto Nao Encontrado!");
 	}
 
 	public String criarLinhaTipoProduto(TipoProduto tp) {

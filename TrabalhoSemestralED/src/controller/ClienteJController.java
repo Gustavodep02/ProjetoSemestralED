@@ -15,7 +15,7 @@ import javax.swing.JTextField;
 
 import entity.Cliente_J;
 
-public class ClienteJController implements ActionListener{
+public class ClienteJController implements ActionListener {
 	private JTextField cnpj;
 	private JTextField nomeJ;
 	private JTextField logradouroJ;
@@ -25,9 +25,10 @@ public class ClienteJController implements ActionListener{
 	private JTextField telefoneJ;
 	private JTextField email;
 	private JTextArea taClienteJuridico;
-	
-	public ClienteJController(JTextField cnpj, JTextField nomeJ, JTextField logradouroJ, JTextField numeroPortaJ, JTextField complementoJ, JTextField cepJ,
-			JTextField telefoneJ, JTextField email, JTextArea taClienteJuridico) {
+
+	public ClienteJController(JTextField cnpj, JTextField nomeJ, JTextField logradouroJ, JTextField numeroPortaJ,
+			JTextField complementoJ, JTextField cepJ, JTextField telefoneJ, JTextField email,
+			JTextArea taClienteJuridico) {
 		this.cnpj = cnpj;
 		this.nomeJ = nomeJ;
 		this.logradouroJ = logradouroJ;
@@ -38,8 +39,35 @@ public class ClienteJController implements ActionListener{
 		this.email = email;
 		this.taClienteJuridico = taClienteJuridico;
 	}
+
 	public void cadastrarClienteJuridico() throws Exception {
 		Cliente_J cliente = new Cliente_J();
+		if(cnpj.getText().length() != 14 || !cnpj.getText().matches("[0-9]+")) {
+            taClienteJuridico.setText("CNPJ Invalido!");
+            return;
+        }else if(cepJ.getText().length() != 8 || !cepJ.getText().matches("[0-9]+")) {
+            taClienteJuridico.setText("CEP Invalido!");
+            return;
+        }else if(numeroPortaJ.getText().length() == 0 || !numeroPortaJ.getText().matches("[0-9]+")) {
+            taClienteJuridico.setText("Numero de Porta Invalido!");
+            return;
+        }else if(logradouroJ.getText().length() == 0) {
+            taClienteJuridico.setText("Logradouro Invalido!");
+            return;
+        }else if(nomeJ.getText().length() == 0) {
+        	taClienteJuridico.setText("Nome Invalido!");
+            return;
+        }else if(telefoneJ.getText().length() != 11 || !telefoneJ.getText().matches("[0-9]+")) {
+            taClienteJuridico.setText("Telefone Invalido!");
+            return;
+        }else if(email.getText().length() == 0 || !email.getText().contains("@") || !email.getText().contains(".com")) {
+            taClienteJuridico.setText("Email Invalido!");
+            return;
+        }else if(complementoJ.getText().length() == 0) {
+            taClienteJuridico.setText("Complemento Invalido!");
+            return;
+        }
+        
 		cliente.cnpj = cnpj.getText();
 		cliente.nome = nomeJ.getText();
 		cliente.logradouro = logradouroJ.getText();
@@ -49,24 +77,22 @@ public class ClienteJController implements ActionListener{
 		cliente.telefone = telefoneJ.getText();
 		cliente.email = email.getText();
 
-		// codigo para adicionar o cliente ao csv
-
 		String linha = criarLinhaClienteJuridico(cliente);
 
-		File arq = new File("C:\\TEMP", "Cliente_juridico.csv"); // mudar o local
+		File arq = new File("./Cliente_juridico.csv"); 
 		FileInputStream fluxo = new FileInputStream(arq);
 		InputStreamReader leitor = new InputStreamReader(fluxo);
 		BufferedReader buffer = new BufferedReader(leitor);
-		String linha1 = buffer.readLine(); // recebe a linha
-		linha1 = buffer.readLine();// pula a primeira linha
-		while (linha1 != null) { // realiza a busca em todo o csv ate o fim do arquivo
+		String linha1 = buffer.readLine();
+		linha1 = buffer.readLine();
+		while (linha1 != null) {
 			String[] dados = linha1.split(";");
 			if (dados[0].equals(cnpj.getText().toString())) {
 				taClienteJuridico.setText("Cliente ja cadastrado!");
 				buffer.close();
 				leitor.close();
 				fluxo.close();
-				return; // caso encontre finaliza a funcao
+				return;
 			}
 			linha1 = buffer.readLine();
 		}
@@ -78,39 +104,37 @@ public class ClienteJController implements ActionListener{
 		fw.close();
 		taClienteJuridico.setText("Cliente Cadastrado!");
 	}
-	
-	public void consultarClienteJuridico() throws Exception {
-		// codigo para buscar o cliente no csv
-				File arq = new File("C:\\TEMP", "Cliente_juridico.csv"); // mudar o local
-				if (arq.exists() && arq.isFile()) {
-					FileInputStream fluxo = new FileInputStream(arq);
-					InputStreamReader leitor = new InputStreamReader(fluxo);
-					BufferedReader buffer = new BufferedReader(leitor);
-					String linha = buffer.readLine(); // recebe a linha
-					linha = buffer.readLine();// pula a primeira linha
-					while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
-						String[] dados = linha.split(";");
-						if (dados[0].equals(cnpj.getText().toString())) {
-							taClienteJuridico.setText("CNPJ: " + dados[0] + "\nNome Fantasia: " + dados[1] + "\nLogradouro: " + dados[2]
-									+ "\nNumero de Porta: " + dados[3] + "\nComplemento: " + dados[4] + "\nCEP: " + dados[5]
-									+ "\nTelefone: " + linha.split(";")[6]+ "\nEmail: " + linha.split(";")[7]);
-							buffer.close();
-							leitor.close();
-							fluxo.close();
-							return; // caso encontre retorna o cliente
-						}
-						linha = buffer.readLine();
-					}
 
-				} else {
-					throw new Exception("Arquivo inexistente");
+	public void consultarClienteJuridico() throws Exception {
+		File arq = new File("./Cliente_juridico.csv");
+		if (arq.exists() && arq.isFile()) {
+			FileInputStream fluxo = new FileInputStream(arq);
+			InputStreamReader leitor = new InputStreamReader(fluxo);
+			BufferedReader buffer = new BufferedReader(leitor);
+			String linha = buffer.readLine();
+			linha = buffer.readLine();
+			while (linha != null) {
+				String[] dados = linha.split(";");
+				if (dados[0].equals(cnpj.getText().toString())) {
+					taClienteJuridico.setText("CNPJ: " + dados[0] + "\nNome Fantasia: " + dados[1] + "\nLogradouro: "
+							+ dados[2] + "\nNumero de Porta: " + dados[3] + "\nComplemento: " + dados[4] + "\nCEP: "
+							+ dados[5] + "\nTelefone: " + linha.split(";")[6] + "\nEmail: " + linha.split(";")[7]);
+					buffer.close();
+					leitor.close();
+					fluxo.close();
+					return;
 				}
-				taClienteJuridico.setText("Cliente Nao Encontrado!"); // caso nao encontre seta o texto para Cliente Nao
-																	// Encontrado
+				linha = buffer.readLine();
+			}
+
+		} else {
+			throw new Exception("Arquivo inexistente");
+		}
+		taClienteJuridico.setText("Cliente Nao Encontrado!");
 	}
-	
+
 	public void excluirClienteJuridico() throws Exception {
-		File arq = new File("C:\\TEMP", "Cliente_juridico.csv"); // mudar o local
+		File arq = new File("./Cliente_juridico.csv");
 
 		if (!arq.exists() || !arq.isFile()) {
 			throw new Exception("Arquivo inexistente");
@@ -122,7 +146,6 @@ public class ClienteJController implements ActionListener{
 		StringBuilder novoConteudo = new StringBuilder();
 		String linha = buffer.readLine();
 
-		// Mantem a primeira linha (cabeçalho) no novo conteúdo
 		if (linha != null) {
 			novoConteudo.append(linha).append("\n");
 			linha = buffer.readLine();
@@ -130,7 +153,6 @@ public class ClienteJController implements ActionListener{
 
 		boolean clienteRemovido = false;
 
-		// Le cada linha e adiciona ao novo conteúdo, exceto a linha a ser excluída
 		while (linha != null) {
 			String[] dados = linha.split(";");
 			if (!dados[0].equals(cnpj.getText().toString())) {
@@ -145,7 +167,6 @@ public class ClienteJController implements ActionListener{
 		leitor.close();
 		fluxo.close();
 
-		// Se o cliente foi removido, reescreve o arquivo
 		if (clienteRemovido) {
 			FileWriter fw = new FileWriter(arq);
 			PrintWriter pw = new PrintWriter(fw);
@@ -158,11 +179,12 @@ public class ClienteJController implements ActionListener{
 			taClienteJuridico.setText("Cliente Nao Encontrado!");
 		}
 	}
+
 	public String criarLinhaClienteJuridico(Cliente_J cliente) {
-		return cliente.cnpj + ";" + cliente.nome + ";" + cliente.logradouro + ";"
-				+ cliente.numeroPorta + ";" + cliente.complemento + ";" + cliente.cep + ";"
-				+ cliente.telefone + ";" + cliente.email;
+		return cliente.cnpj + ";" + cliente.nome + ";" + cliente.logradouro + ";" + cliente.numeroPorta + ";"
+				+ cliente.complemento + ";" + cliente.cep + ";" + cliente.telefone + ";" + cliente.email;
 	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String cmd = e.getActionCommand();
@@ -180,7 +202,7 @@ public class ClienteJController implements ActionListener{
 				e1.printStackTrace();
 			}
 		}
-		
+
 		if (cmd.equals("Excluir por CNPJ")) {
 			try {
 				excluirClienteJuridico();
@@ -189,5 +211,5 @@ public class ClienteJController implements ActionListener{
 			}
 		}
 	}
-		
+
 }

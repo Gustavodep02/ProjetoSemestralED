@@ -1,6 +1,6 @@
 package model;
 
 public class No {
-    String dado;
-    No proximo;
+	String dado;
+	No proximo;
 }

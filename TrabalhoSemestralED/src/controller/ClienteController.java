@@ -39,6 +39,29 @@ public class ClienteController implements ActionListener {
 
 	public void cadastrarClienteFisico() throws Exception {
 		Cliente cliente = new Cliente();
+		if(cpf.getText().length() != 11 || !cpf.getText().matches("[0-9]+")) {
+            taClienteFisico.setText("CPF Invalido!");
+            return;
+        }else if(celular.getText().length() != 11 || !celular.getText().matches("[0-9]+")) {
+            taClienteFisico.setText("Celular Invalido!");
+            return;
+        }else if(cepF.getText().length() != 8|| !cepF.getText().matches("[0-9]+")) {
+            taClienteFisico.setText("CEP Invalido!");
+            return;
+        }else if(numeroPortaF.getText().length() == 0|| !numeroPortaF.getText().matches("[0-9]+")) {
+            taClienteFisico.setText("Numero de Porta Invalido!");
+            return;
+        }else if(logradouroF.getText().length() == 0) {
+            taClienteFisico.setText("Logradouro Invalido!");
+            return;
+        }else if(nomeF.getText().length() == 0) {
+        	taClienteFisico.setText("Nome Invalido!");
+            return;
+        }else if(complementoF.getText().length() == 0) {
+        	taClienteFisico.setText("Complemento Invalido!");
+            return;
+        }
+		
 		cliente.cpf = cpf.getText();
 		cliente.nome = nomeF.getText();
 		cliente.logradouro = logradouroF.getText();
@@ -46,25 +69,23 @@ public class ClienteController implements ActionListener {
 		cliente.complemento = complementoF.getText();
 		cliente.cep = cepF.getText();
 		cliente.celular = celular.getText();
-
-		// codigo para adicionar o cliente ao csv
-
+		
 		String linha = criarLinhaCliente(cliente);
 
-		File arq = new File("C:\\TEMP", "Cliente.csv"); // mudar o local
+		File arq = new File("./Cliente.csv");
 		FileInputStream fluxo = new FileInputStream(arq);
 		InputStreamReader leitor = new InputStreamReader(fluxo);
 		BufferedReader buffer = new BufferedReader(leitor);
-		String linha1 = buffer.readLine(); // recebe a linha
-		linha1 = buffer.readLine();// pula a primeira linha
-		while (linha1 != null) { // realiza a busca em todo o csv ate o fim do arquivo
+		String linha1 = buffer.readLine();
+		linha1 = buffer.readLine();
+		while (linha1 != null) {
 			String[] dados = linha1.split(";");
 			if (dados[0].equals(cpf.getText().toString())) {
 				taClienteFisico.setText("Cliente ja cadastrado!");
 				buffer.close();
 				leitor.close();
 				fluxo.close();
-				return; // caso encontre finaliza a funcao
+				return;
 			}
 			linha1 = buffer.readLine();
 		}
@@ -78,15 +99,14 @@ public class ClienteController implements ActionListener {
 	}
 
 	public void consultarClienteFisico() throws Exception {
-		// codigo para buscar o cliente no csv
-		File arq = new File("C:\\TEMP", "Cliente.csv"); // mudar o local
+		File arq = new File("./Cliente.csv");
 		if (arq.exists() && arq.isFile()) {
 			FileInputStream fluxo = new FileInputStream(arq);
 			InputStreamReader leitor = new InputStreamReader(fluxo);
 			BufferedReader buffer = new BufferedReader(leitor);
-			String linha = buffer.readLine(); // recebe a linha
-			linha = buffer.readLine();// pula a primeira linha
-			while (linha != null) { // realiza a busca em todo o csv ate o fim do arquivo
+			String linha = buffer.readLine();
+			linha = buffer.readLine();
+			while (linha != null) {
 				String[] dados = linha.split(";");
 				if (dados[0].equals(cpf.getText().toString())) {
 					taClienteFisico.setText("CPF: " + dados[0] + "\nNome: " + dados[1] + "\nLogradouro: " + dados[2]
@@ -95,7 +115,7 @@ public class ClienteController implements ActionListener {
 					buffer.close();
 					leitor.close();
 					fluxo.close();
-					return; // caso encontre retorna o cliente
+					return;
 				}
 				linha = buffer.readLine();
 			}
@@ -105,13 +125,12 @@ public class ClienteController implements ActionListener {
 		} else {
 			throw new Exception("Arquivo inexistente");
 		}
-		taClienteFisico.setText("Cliente Nao Encontrado!"); // caso nao encontre seta o texto para Cliente Nao
-															// Encontrado
+		taClienteFisico.setText("Cliente Nao Encontrado!");
 	}
 
 	public void excluirClienteFisico() throws Exception {
 
-		File arq = new File("C:\\TEMP", "Cliente.csv"); // mudar o local
+		File arq = new File("./Cliente.csv");
 
 		if (!arq.exists() || !arq.isFile()) {
 			throw new Exception("Arquivo inexistente");
@@ -123,7 +142,6 @@ public class ClienteController implements ActionListener {
 		StringBuilder novoConteudo = new StringBuilder();
 		String linha = buffer.readLine();
 
-		// Mantem a primeira linha (cabeçalho) no novo conteúdo
 		if (linha != null) {
 			novoConteudo.append(linha).append("\n");
 			linha = buffer.readLine();
@@ -131,7 +149,6 @@ public class ClienteController implements ActionListener {
 
 		boolean clienteRemovido = false;
 
-		// Le cada linha e adiciona ao novo conteúdo, exceto a linha a ser excluída
 		while (linha != null) {
 			String[] dados = linha.split(";");
 			if (!dados[0].equals(cpf.getText().toString())) {
@@ -146,7 +163,6 @@ public class ClienteController implements ActionListener {
 		leitor.close();
 		fluxo.close();
 
-		// Se o cliente foi removido, reescreve o arquivo
 		if (clienteRemovido) {
 			FileWriter fw = new FileWriter(arq);
 			PrintWriter pw = new PrintWriter(fw);
