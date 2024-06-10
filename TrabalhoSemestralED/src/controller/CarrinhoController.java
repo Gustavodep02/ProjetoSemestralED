@@ -11,11 +11,12 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-import model.Pilha;
 import model.Fila;
+import model.Pilha;
 
 public class CarrinhoController implements ActionListener {
 
@@ -25,6 +26,7 @@ public class CarrinhoController implements ActionListener {
 	private JTextArea taCarrinho;
 	private JTextArea taCheckout;
 	private JTextArea taVendas;
+	private int contadorAdicionado =0;
 	Pilha pilha = new Pilha();
 	Fila<String> fila = new Fila();
 	Fila<String> p1 = new Fila();
@@ -54,14 +56,14 @@ public class CarrinhoController implements ActionListener {
 		String produto = tipo[0];
 		String quantidade = this.quantidade.getText();
 		if (Integer.parseInt(quantidade) <= 0) {
-			throw new Exception("Erro: Quantidade inválida!");
+			JOptionPane.showMessageDialog(null, "Erro: Quantidade inválida!");
 		}
 		alteraQuantidade(produto, quantidade, false);
 		p1.insert(produto);
 		String carrinho = "Produto:" + produto + " | " + "Quantidade:" + quantidade + ":\n";
 		pilha.push(carrinho);
 		taCarrinho.append(pilha.top());
-
+		contadorAdicionado++;
 	}
 
 	public void gerarVendas() throws IOException {
@@ -134,6 +136,9 @@ public class CarrinhoController implements ActionListener {
 	}
 
 	public void removerCarrinho() throws Exception {
+		if (contadorAdicionado == 0) {
+            JOptionPane.showMessageDialog(null, "Erro: Carrinho vazio!");
+        }else {
 		String[] tipo = produto.getSelectedItem().toString().split(" | ");
 		String produto = tipo[0];
 		String quantidade = this.quantidade.getText().toString();
@@ -142,6 +147,8 @@ public class CarrinhoController implements ActionListener {
 		String texto = taCarrinho.getText();
 		texto = texto.replace(pop, "");
 		taCarrinho.setText(texto);
+		contadorAdicionado--;
+        }
 	}
 
 	public void alteraQuantidade(String produto, String quantidade, boolean operacao) throws Exception {
@@ -201,6 +208,9 @@ public class CarrinhoController implements ActionListener {
 	}
 
 	public void Checkout() throws Exception {
+		if (contadorAdicionado == 0) {
+            JOptionPane.showMessageDialog(null, "Erro: Carrinho vazio!");
+        }else {
 		File arq = new File("./Carrinho.csv");
 		FileWriter fw = new FileWriter(arq);
 		PrintWriter pw = new PrintWriter(fw);
@@ -227,6 +237,8 @@ public class CarrinhoController implements ActionListener {
 		taCheckout.append("Cliente: " + cliente.getSelectedItem().toString() + "\nTotal da Compra: " + total + "\n");
 		cadastraVenda(cliente.getSelectedItem().toString(), total);
 		taCarrinho.setText("");
+		contadorAdicionado = 0;
+        }
 	}
 
 	public Double pegaValor(String produto) throws IOException {
